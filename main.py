@@ -6,6 +6,9 @@ import time
 
 client = commands.Bot(command_prefix=")")
 
+intents = discord.Intents()
+client = commands.Bot(command_prefix=")",intents = discord.Intents.all())
+
 @client.event
 async def on_ready():
     print("Bot is online")
@@ -60,5 +63,37 @@ async def poll(ctx, *, question):
   else:
     await ctx.message.delete()
     print("poll asked in incorrect channel")
+
+#reaction roles
+@client.event
+async def on_raw_reaction_add(payload):
+
+  message_id = payload.message_id
+  if message_id == 831302808682496053:
+    print("p")
+    guild_id = payload.guild_id
+    guild = discord.utils.find(lambda g:g.id==guild_id, client.guilds)
+    print("weaaaaaaaaaa")
+    role = discord.utils.get(guild.roles, name="Notifications on")
+    if payload.emoji.name == "😩":
+      if role is not None:
+        member = payload.member
+        print(member.name)
+        if member is not None:  
+          await member.add_roles(role)
+
+@client.event
+async def on_raw_reaction_remove(payload):
+  message_id = payload.message_id
+  if message_id == 831302808682496053:
+    print("p")
+    guild_id = payload.guild_id
+    guild = discord.utils.find(lambda g:g.id==guild_id, client.guilds)
+    print("weaaaaaaaaaa")
+    print(payload.emoji.name)
+    role = discord.utils.get(guild.roles, name="Notifications on")
+    if payload.emoji.name == "😩":
+      if role is not None:
+        await discord.utils.get(client.get_all_members(), id = payload.user_id).remove_roles(role)
   
 client.run("TOKEN")   
