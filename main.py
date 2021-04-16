@@ -4,8 +4,6 @@ from discord.utils import get
 import discord.ext.commands
 import time
 
-client = commands.Bot(command_prefix=")")
-
 intents = discord.Intents()
 client = commands.Bot(command_prefix=")",intents = discord.Intents.all())
 
@@ -20,10 +18,11 @@ async def commands(ctx):
     description = "(all except the secret ones hehehe)",
     colour = discord.Colour.orange(),
   )
-  embed.add_field(name="commands",value="well its this command duh",inline=False)
+  embed.add_field(name=")commands",value="well its this command duh",inline=False)
   #change channel tags to fit your server
-  embed.add_field(name="poll",value="Parameters: Question. Puts up a poll. Only works in <#829587423235276821>",inline=False)
-  embed.add_field(name="plug",value="Parameters: Channel. Plugs a channel. Only works in <#808770452477837342>", inline=False)
+  embed.add_field(name=")poll",value="Parameters: Question. Puts up a poll. Only works in <#829587423235276821>",inline=False)
+  embed.add_field(name=")plug",value="Parameters: Channel. Plugs a channel. Only works in <#808770452477837342>", inline=False)
+  embed.add_field(name=")react",value="Parameters: MessageID, Emoji. Adds Reaction. Message ID must be the ID of the correct message. To get MessageID, turn on developer mode and right click the message and click \"Copy ID.\" This was made for staff, but we decided to let the public use it.", inline=False)
   await ctx.send(embed=embed)
 
 
@@ -64,6 +63,44 @@ async def poll(ctx, *, question):
     await ctx.message.delete()
     print("poll asked in incorrect channel")
 
+@client.command()
+async def react(ctx, MessageID, Emoji):
+  await ctx.message.delete()
+  try:
+    message = await ctx.fetch_message(MessageID)
+  except:
+    print("nonono")
+  if message.channel.id == ctx.channel.id:
+    await message.add_reaction(Emoji)
+
+@client.command()
+async def amongus(ctx, MessageID):
+  await ctx.message.delete()
+  print(ctx.author.name)
+  try:
+    message = await ctx.fetch_message(MessageID)
+  except:
+    print("nonono")
+  if message.channel.id == ctx.channel.id:
+    await message.add_reaction("🇦")
+    await message.add_reaction("🇲")
+    await message.add_reaction("🇴")
+    await message.add_reaction("🇳")
+    await message.add_reaction("🇬")
+    await message.add_reaction("🇺")
+    await message.add_reaction("🇸")
+
+@client.command()
+async def cheezit(ctx):
+  embed = discord.Embed(
+    title = "",
+    description = "",
+    colour = discord.Colour.orange(),
+  )
+  embed.set_image(url="https://cdn.discordapp.com/attachments/537007354642825236/832326870182789160/AAUvwnjqL_JFeK13c6MyFVm0BpZSvaQNnhzuEvrdTIcvs88-c-k-c0x00ffffff-no-rj.png")
+  await ctx.send(embed=embed)
+    
+
 #reaction roles
 @client.event
 async def on_raw_reaction_add(payload):
@@ -74,13 +111,15 @@ async def on_raw_reaction_add(payload):
     guild_id = payload.guild_id
     guild = discord.utils.find(lambda g:g.id==guild_id, client.guilds)
     print("weaaaaaaaaaa")
-    role = discord.utils.get(guild.roles, name="Notifications on")
     if payload.emoji.name == "😩":
-      if role is not None:
+      role = discord.utils.get(guild.roles, name="Notifications on")
+    if payload.emoji.name == "😳":
+      role = discord.utils.get(guild.roles, name="Gun")
+    if role is not None:
         member = payload.member
         print(member.name)
         if member is not None:  
-          await member.add_roles(role)
+          await member.add_roles(role)  
 
 @client.event
 async def on_raw_reaction_remove(payload):
@@ -93,7 +132,10 @@ async def on_raw_reaction_remove(payload):
     print(payload.emoji.name)
     role = discord.utils.get(guild.roles, name="Notifications on")
     if payload.emoji.name == "😩":
-      if role is not None:
-        await discord.utils.get(client.get_all_members(), id = payload.user_id).remove_roles(role)
+      role = discord.utils.get(guild.roles, name="Notifications on")
+    if payload.emoji.name == "😳":
+      role = discord.utils.get(guild.roles, name="Gun")
+    if role is not None:
+      await discord.utils.get(client.get_all_members(), id = payload.user_id).remove_roles(role)
   
 client.run("TOKEN")   
